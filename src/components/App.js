@@ -1,30 +1,30 @@
-
-import React, { useState } from "react";
+import React from "react";
+import './../styles/App.css';
 import UserList from "./UserList";
 import UserDetails from "./UserDetails";
-import "../styles/App.css";
 
 const App = () => {
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [route, setRoute] = React.useState(window.location.pathname);
 
-  const handleUserClick = (id, e) => {
-    e.preventDefault(); // prevent full reload
-    setSelectedUserId(id);
-  };
+  React.useEffect(() => {
+    const handlePopState = () => setRoute(window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
-  const handleBack = () => {
-    setSelectedUserId(null);
+  const navigate = (path) => {
+    window.history.pushState({}, "", path);
+    setRoute(path);
   };
 
   return (
     <div>
       {/* Do not remove the main div */}
-      <h1>User List</h1>
-      {!selectedUserId ? (
-        <UserList onUserClick={handleUserClick} />
-      ) : (
-        <UserDetails userId={selectedUserId} onBack={handleBack} />
-      )}
+      {route === "/" ? (
+        <UserList navigate={navigate} />
+      ) : route.startsWith("/users/") ? (
+        <UserDetails route={route} />
+      ) : null}
     </div>
   );
 };

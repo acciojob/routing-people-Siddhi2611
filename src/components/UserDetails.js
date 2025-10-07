@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from "react";
 
-const UserDetails = ({ userId, onBack }) => {
+const UserDetails = ({ route }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const userId = route.split("/users/")[1];
+
   useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `https://jsonplaceholder.typicode.com/users/${userId}`
-        );
-        const data = await res.json();
+    setLoading(true);
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
         setUser(data);
-      } catch (err) {
-        console.error("Failed to fetch user details", err);
-      } finally {
         setLoading(false);
-      }
-    };
-    fetchUser();
+      })
+      .catch((err) => console.error("Error fetching user:", err));
   }, [userId]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -31,15 +28,8 @@ const UserDetails = ({ userId, onBack }) => {
       <p>Email: {user.email}</p>
       <p>Phone: {user.phone}</p>
       <p>Website: {user.website}</p>
-
-      <p>
-        <a href="/" onClick={(e) => { e.preventDefault(); onBack(); }}>
-          Back to User List
-        </a>
-      </p>
     </div>
   );
 };
 
 export default UserDetails;
-

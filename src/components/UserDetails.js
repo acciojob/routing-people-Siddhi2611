@@ -8,11 +8,16 @@ const UserDetails = ({ route }) => {
 
   useEffect(() => {
     setLoading(true);
+
+    // Fetch user details
     fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
       .then((res) => res.json())
       .then((data) => {
-        setUser(data);
-        setLoading(false);
+        // Add a short delay to ensure "Loading..." is visible
+        setTimeout(() => {
+          setUser(data);
+          setLoading(false);
+        }, 300);
       })
       .catch((err) => console.error("Error fetching user:", err));
   }, [userId]);
